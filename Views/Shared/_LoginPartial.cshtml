@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<BlogUser> SignInManager
+@inject UserManager<BlogUser> UserManager
+
+@{
+    string returnUrl = $"{Context.Request.Path}{Context.Request.QueryString.Value}";
+}
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        if (!User.IsInRole("AdminModDemo"))
+        {
+            <li class="nav-item">
+                <a class="nav-link px-lg-3 py-3 py-lg-4" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"
+           asp-route-returnUrl="@returnUrl">Account</a>
+            </li>
+        }
+
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@returnUrl">
+                <button type="submit" class="nav-link px-lg-3 py-3 py-lg-4 border-0 bg-white">Logout</button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link px-lg-3 py-3 py-lg-4" asp-area="Identity" asp-page="/Account/Register" asp-route-returnUrl="@returnUrl">Register</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link px-lg-3 py-3 py-lg-4" asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@returnUrl">Login</a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/AdminModDemo" asp-route-returnUrl="@returnUrl">
+                <button type="submit" class="nav-link px-lg-3 py-3 py-lg-4 border-0 bg-white">Admin/Mod Demo</button>
+            </form>
+        </li>
+    }
+</ul>
