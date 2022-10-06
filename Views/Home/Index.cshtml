@@ -18,17 +18,19 @@
 <div class="row">
     @foreach (var blog in Model.OrderByDescending(b => b.Updated).ThenByDescending(b => b.Created))
     {
-        <div class="col-md-6 mb-10">
+        <div class="col-md-6 my-auto py-3">
             <a class="card post-preview lift h-100" asp-action="BlogPostIndex" asp-controller="Posts" asp-route-id="@blog.Id">
                 <img class="card-img-top" src="@_imageService.DecodeImage(blog.ImageData, blog.ContentType)" alt="Blog logo" />
                 <div class="card-body">
                     <h5 class="card-title">@blog.Name</h5>
-                    <p class="card-text" data-toggle="tooltip" data-placement="top" title="" data-orginal-title="@blog.Description">@blog.Description</p>
+                    <p class="card-text">@blog.Description</p>
                 </div>
                 <div class="card-footer">
                     <div class="post-preview-meta">
                         <div class="post-preview-meta-details">
-                            @{var date = (@blog.Updated == null) ? @blog.Created : @blog.Updated;}
+                            @{
+                                var date = @blog.Updated ?? @blog.Created;
+                            }
                             <div class="post-preview-meta-details-date">@date</div>
                         </div>
                     </div>
@@ -37,17 +39,17 @@
             @if (User.IsInRole(UserRole.Administrator.ToString()) || User.IsInRole(UserRole.AdminModDemo.ToString()))
             {
                 <div class="row mt-2">
-                    <div class="col-md-4 text-center">
+                    <div class="col-lg-4 text-center">
                         <a class="btn btn-purple btn-sm w-100 fw-bold mb-2" asp-action="Create"
                         asp-controller="Posts" asp-route-id="@blog.Id" asp-route-page="@Model.PageNumber">Create Post</a>
                     </div>
 
-                    <div class="col-md-4 text-center">
+                    <div class="col-lg-4 text-center">
                         <a class="btn btn-purple btn-sm w-100 fw-bold mb-2" asp-action="Edit"
                         asp-controller="Blogs" asp-route-id="@blog.Id" asp-route-page="@Model.PageNumber">Edit Blog</a>
                     </div>
 
-                    <div class="col-md-4 text-center">
+                    <div class="col-lg-4 text-center">
                         <a class="btn btn-purple btn-sm w-100 fw-bold mb-2" asp-action="Delete" 
                         asp-controller="Blogs" asp-route-id="@blog.Id" asp-route-page="@Model.PageNumber">Delete Blog</a>
                     </div>
@@ -81,13 +83,10 @@
         var swalMsg = '@TempData["SweetAlert"]'
         if (swalMsg != "") {
             Swal.fire({
-                icon: 'error',
+                icon: '@TempData["SwalIcon"]',
                 title: swalMsg,
                 timer: 5000
             })
         }
-        $(document).ready(function () {
-            $("p").tooltip();
-        });
     </script>
 }

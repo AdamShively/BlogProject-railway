@@ -42,6 +42,13 @@ namespace BlogProject.Controllers
 
             var posts = _blogSearchService.Search(searchTerm);
 
+            if (!posts.Any())
+            {
+                TempData["NoResults"] = "No Results Found";
+            }
+
+            ViewData["HeaderImage"] = Url.Content("~/assets/img/home.jpg");
+
             return View(await posts.ToPagedListAsync(pageNum, pageSize));
         }
 
@@ -55,7 +62,7 @@ namespace BlogProject.Controllers
         // GET: Posts
         public async Task<IActionResult> BlogPostIndex(int? id, int? page)
         {
-            if (id is null)
+            if (id == null)
             {
                 return NotFound();  
             }
@@ -71,13 +78,13 @@ namespace BlogProject.Controllers
             var blog = await _context.Blogs
                 .FirstOrDefaultAsync(b => b.Id == id);
 
-            if (blog.ImageData is not null)
+            if (blog.ImageData != null)
             {
                 ViewData["HeaderImage"] = _imageService.DecodeImage(blog.ImageData, blog.ContentType);
             }
             else
             {
-                ViewData["HeaderImage"] = @Url.Content("~/assets/img/home-bg.jpg");
+                ViewData["HeaderImage"] = Url.Content("~/assets/img/home.jpg");
             }
 
             ViewData["MainText"] = blog.Name;
@@ -116,13 +123,13 @@ namespace BlogProject.Controllers
                         .Distinct().ToList()
             };
 
-            if (post.ImageData is not null)
+            if (post.ImageData != null)
             {
                 ViewData["HeaderImage"] = _imageService.DecodeImage(post.ImageData, post.ContentType);
             }
             else
             {
-                ViewData["HeaderImage"] = @Url.Content("~/assets/img/defaultUserImage.png");
+                ViewData["HeaderImage"] = Url.Content("~/assets/img/home.jpg");
             }
 
             ViewData["MainText"] = post.Title;
@@ -139,10 +146,11 @@ namespace BlogProject.Controllers
 
             var blog = await _context.Blogs.FindAsync(id);
 
+            ViewData["HeaderImage"] = Url.Content("~/assets/img/home.jpg");
             ViewData["BlogName"] = blog.Name;
             ViewData["BlogId"] = id;
-            
             ViewData["BlogAuthorId"] = new SelectList(_context.Users, "Id", "Id");
+
             return View();
         }
 
@@ -154,7 +162,7 @@ namespace BlogProject.Controllers
         public async Task<IActionResult> Create(int? page, [Bind("BlogId,Title,Abstract,Content,PostStatus,Image")] Post post, List<string> tagValues)
         {
 
-            if (ModelState.IsValid) //Is this incoming model from the form valid?
+            if (ModelState.IsValid)
             {
                 post.Created = DateTime.Now;
 
@@ -234,6 +242,14 @@ namespace BlogProject.Controllers
                 return NotFound();
             }
 
+            if (post.ImageData != null)
+            {
+                ViewData["HeaderImage"] = _imageService.DecodeImage(post.ImageData, post.ContentType);
+            }
+            else
+            {
+                ViewData["HeaderImage"] = Url.Content("~/assets/img/home.jpg");
+            }
 
             var blog = await _context.Blogs.FindAsync(post.BlogId);
             ViewData["BlogName"] = blog.Name;
@@ -258,6 +274,7 @@ namespace BlogProject.Controllers
             if (User.IsInRole(UserRole.AdminModDemo.ToString()) && post.BlogAuthorId == _config["AdminId"])
             {
                 TempData["SweetAlert"] = "Users logged in as an admin/mod demo user cannot edit posts created by the primary administrator.";
+                TempData["SwalIcon"] = "error";
                 return RedirectToAction("BlogPostIndex", "Posts", new { id = post.BlogId });
             }
 
@@ -356,6 +373,15 @@ namespace BlogProject.Controllers
                 return NotFound();
             }
 
+            if (post.ImageData != null)
+            {
+                ViewData["HeaderImage"] = _imageService.DecodeImage(post.ImageData, post.ContentType);
+            }
+            else
+            {
+                ViewData["HeaderImage"] = Url.Content("~/assets/img/home.jpg");
+            }
+
             return View(post);
         }
 
@@ -373,6 +399,7 @@ namespace BlogProject.Controllers
             if (User.IsInRole(UserRole.AdminModDemo.ToString()) && post.BlogAuthorId == _config["AdminId"])
             {
                 TempData["SweetAlert"] = "Users logged in as an admin/mod demo user cannot delete posts created by the primary administrator.";
+                TempData["SwalIcon"] = "error";
                 return RedirectToAction("BlogPostIndex", "Posts", new { id = post.BlogId });
             }
 

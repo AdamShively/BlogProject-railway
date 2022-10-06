@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BlogProject.Data;
@@ -10,11 +6,7 @@ using BlogProject.Models;
 using BlogProject.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using BlogProject.Enums;
-using MovieProject.Models.Settings;
-using Microsoft.Extensions.Options;
 
 namespace BlogProject.Controllers
 {
@@ -34,38 +26,11 @@ namespace BlogProject.Controllers
             _config = config;
         }
 
-        // GET: Blogs
-        public async Task<IActionResult> Index()
-        {
-            //Goes out to database, talks to blogs table, includes related blog author to query author of blog
-            //Returns an asycronous list 
-            var applicationDbContext = _context.Blogs.Include(b => b.BlogAuthor);
-            return View(await applicationDbContext.ToListAsync());
-        }
-
-        // GET: Blogs/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Blogs == null)
-            {
-                return NotFound();
-            }
-
-            var blog = await _context.Blogs
-                .Include(b => b.BlogAuthor)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (blog == null)
-            {
-                return NotFound();
-            }
-
-            return View(blog);
-        }
-
         // GET: Blogs/Create
         [Authorize(Roles = "Administrator,AdminModDemo")]
         public IActionResult Create(int? page)
         {
+            ViewData["HeaderImage"] = Url.Content("~/assets/img/home.jpg");
             ViewData["BlogAuthorId"] = new SelectList(_context.Users, "Id", "Id");
             TempData["PageNumber"] = page ?? 1;
             return View();
@@ -107,6 +72,16 @@ namespace BlogProject.Controllers
             {
                 return NotFound();
             }
+
+            if (blog.ImageData != null)
+            {
+                ViewData["HeaderImage"] = _imageService.DecodeImage(blog.ImageData, blog.ContentType);
+            }
+            else
+            {
+                ViewData["HeaderImage"] = Url.Content("~/assets/img/home.jpg");
+            }
+
             TempData["PageNumber"] = page ?? 1;
             return View(blog);
         }
@@ -126,6 +101,7 @@ namespace BlogProject.Controllers
             if (User.IsInRole(UserRole.AdminModDemo.ToString()) && blog.BlogAuthorId == _config["AdminId"])
             {
                 TempData["SweetAlert"] = "Users logged in as an admin/mod demo user cannot edit blogs created by the primary administrator.";
+                TempData["SwalIcon"] = "error";
                 return RedirectToAction("Index", "Home", new { page });
             }
 
@@ -146,7 +122,7 @@ namespace BlogProject.Controllers
                         newBlog.Description = blog.Description;
                     }
 
-                    if (newImage is not null)
+                    if (newImage != null)
                     {
                         newBlog.ImageData = await _imageService.EncodeImageAsync(newImage);
                         newBlog.ContentType = _imageService.ContentType(newImage);
@@ -189,6 +165,20 @@ namespace BlogProject.Controllers
                 return NotFound();
             }
 
+            if (blog == null)
+            {
+                return NotFound();
+            }
+
+            if (blog.ImageData != null)
+            {
+                ViewData["HeaderImage"] = _imageService.DecodeImage(blog.ImageData, blog.ContentType);
+            }
+            else
+            {
+                ViewData["HeaderImage"] = Url.Content("~/assets/img/home.jpg");
+            }
+
             TempData["PageNumber"] = page ?? 1;
 
             return View(blog);
@@ -210,6 +200,7 @@ namespace BlogProject.Controllers
             if (User.IsInRole(UserRole.AdminModDemo.ToString()) && blog.BlogAuthorId == _config["AdminId"])
             {
                 TempData["SweetAlert"] = "Users logged in as an admin/mod demo user cannot delete blogs created by the primary administrator.";
+                TempData["SwalIcon"] = "error";
                 return RedirectToAction("Index", "Home", new { page });
             }
 

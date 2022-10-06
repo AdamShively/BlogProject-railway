@@ -24,6 +24,9 @@ namespace BlogProject.Services
                     p => p.Title.ToLower().Contains(searchTerm) ||
                     p.Abstract.ToLower().Contains(searchTerm) ||
                     p.Content.ToLower().Contains(searchTerm) ||
+                    p.BlogAuthor.FirstName.ToLower().Contains(searchTerm) ||
+                    p.BlogAuthor.LastName.ToLower().Contains(searchTerm) ||
+                    p.BlogAuthor.Email.ToLower().Contains(searchTerm) ||
                     p.Comments.Any(c => c.Body.ToLower().Contains(searchTerm) ||
                                    c.ModeratedBody.ToLower().Contains(searchTerm) ||
                                    c.BlogAuthor.FirstName.ToLower().Contains(searchTerm) ||

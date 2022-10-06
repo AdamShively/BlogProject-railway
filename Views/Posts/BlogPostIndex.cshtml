@@ -12,7 +12,7 @@
 @model IPagedList<Post>
 
 @{
-    ViewData["Title"] = "Blog Post";
+    ViewData["Title"] = "Blog Posts";
     var isAdmin = User.IsInRole(UserRole.Administrator.ToString()) || User.IsInRole(UserRole.AdminModDemo.ToString());
 }
 
@@ -33,7 +33,7 @@
                     <div class="post-preview-meta">
                         <div class="post-preview-meta-details">
                             @{
-                                var date = (@post.Updated == null) ? @post.Created : @post.Updated;
+                                var date = @post.Updated ?? @post.Created;
                             }
                             <div class="post-preview-meta-details-date">@date</div>
                         </div>
@@ -78,13 +78,10 @@
         var swalMsg = '@TempData["SweetAlert"]'
         if (swalMsg != "") {
             Swal.fire({
-                icon: 'error',
+                icon: '@TempData["SwalIcon"]',
                 title: swalMsg,
                 timer: 5000
             })
         }
-        $(document).ready(function () {
-            $("p").tooltip();
-        });
     </script>
 }

@@ -8,13 +8,6 @@ function AddTag() {
     let result = search(tagEntry.value);
 
     if (result != null) {
-        //Display error message.
-        /*Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: result,
-            footer: '<a href="">Why do I have this issue?</a>'
-        })*/
         swalDarkBtn.fire({
             html: `<span class='font-weight-bolder'>${result}</span>`
         });
@@ -103,13 +96,3 @@ const swalDarkBtn = Swal.mixin({
     timer: 5000,
     buttonStyling: false
 });
-/*
- if (tagEntry != null) {
-    //Create new Select option.
-    let newOption = new Option(tagEntry);
-    document.getElementById("TagList").options[i++] = newOption;
-
-    //Clear out the TagEntry control.
-        
-    return true;
-    }*/

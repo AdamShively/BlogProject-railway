@@ -56,21 +56,19 @@
 @section Scripts{
 
     <script>
-        //Default font size but not for placeholder...
+        //Summernote
         $('#Message').summernote({
-            placeholder: "Message"
+            placeholder: ""
         });
 
+        //Sweet alert
         var swalMsg = '@TempData["SweetAlert"]'
         if (swalMsg != "") {
             Swal.fire({
-                icon: 'error',
+                icon: '@TempData["SwalIcon"]',
                 title: swalMsg,
                 timer: 5000
             })
         }
-        $(document).ready(function () {
-            $("p").tooltip();
-        });
     </script>
 }

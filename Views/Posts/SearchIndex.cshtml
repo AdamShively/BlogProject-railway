@@ -14,44 +14,54 @@
     var isAdmin = User.IsInRole(UserRole.Administrator.ToString()) || User.IsInRole(UserRole.AdminModDemo.ToString());
 }
 
-<div class="row">
-    @foreach (var post in Model)
+@{
+    var noResults = TempData["NoResults"];
+    if (noResults != null)
     {
-        @if (post.PostStatus != PostStatus.ProductionReady && !isAdmin)  //Only admin users can see unfinished posts.
-        {
-            continue;
-        }
-        <div class="col-sm-6 col-lg-4 mb-10">
-            <a class="card post-preview lift h-100 mb-2" asp-action="Details" asp-controller="Posts" asp-route-slug="@post.Slug">
-                <div class="card-body">
-                    <h5 class="card-title">@post.Title</h5>
-                    <p class="card-text">@post.Abstract</p>
-                </div>
-                <div class="card-footer">
-                    <div class="post-preview-meta">
-                        <div class="post-preview-meta-details">
-                            @{
-                                var date = (@post.Updated == null) ? @post.Created : @post.Updated;
-                            }
-                            <div class="post-preview-meta-details-date">@date</div>
-                        </div>
-                    </div>
-                </div>
-                <img class="card-img-bottom" src="@imageService.DecodeImage(post.ImageData,  post.ContentType)" />
-            </a>
-
-            @if (User.IsInRole(UserRole.Administrator.ToString()) || User.IsInRole(UserRole.AdminModDemo.ToString()))
+        <p class="fw-bolder">@noResults</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var post in Model)
             {
-                <div class="text-center">
-                    <a class="btn btn-purple btn-sm w-100 btn-block border-dark" asp-action="Edit" asp-controller="Posts" asp-route-id="@post.Id">Edit Post</a>
-                </div>
-                <div class="text-center">
-                    <a class="btn btn-purple btn-sm w-100 btn-block border-dark" asp-action="Delete" asp-controller="Posts" asp-route-id="@post.Id">Delete Post</a>
+                @if (post.PostStatus != PostStatus.ProductionReady && !isAdmin)  //Only admin users can see unfinished posts.
+                {
+                    continue;
+                }
+                <div class="col-sm-6 col-lg-4 mb-10">
+                    <a class="card post-preview lift h-100 mb-2" asp-action="Details" asp-controller="Posts" asp-route-slug="@post.Slug">
+                        <div class="card-body">
+                            <h5 class="card-title">@post.Title</h5>
+                            <p class="card-text">@post.Abstract</p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="post-preview-meta">
+                                <div class="post-preview-meta-details">
+                                    @{
+                                        var date = (@post.Updated == null) ? @post.Created : @post.Updated;
+                                    }
+                                    <div class="post-preview-meta-details-date">@date</div>
+                                </div>
+                            </div>
+                        </div>
+                        <img class="card-img-bottom" src="@imageService.DecodeImage(post.ImageData,  post.ContentType)" />
+                    </a>
+
+                    @if (User.IsInRole(UserRole.Administrator.ToString()) || User.IsInRole(UserRole.AdminModDemo.ToString()))
+                    {
+                        <div class="text-center">
+                            <a class="btn btn-purple btn-sm w-100 btn-block border-dark" asp-action="Edit" asp-controller="Posts" asp-route-id="@post.Id">Edit Post</a>
+                        </div>
+                        <div class="text-center">
+                            <a class="btn btn-purple btn-sm w-100 btn-block border-dark" asp-action="Delete" asp-controller="Posts" asp-route-id="@post.Id">Delete Post</a>
+                        </div>
+                    }
                 </div>
             }
         </div>
     }
-</div>
+}
 
 <hr />
 
@@ -63,10 +73,10 @@
 <div class="row">
     <div class="col">
         @Html.PagedListPager(Model, page => Url.Action("SearchIndex", new { page = page, searchTerm = ViewData["SearchTerm"] }),
-            new PagedListRenderOptions
-            {
-                LiElementClasses = new string[] { "page-item" },
-                PageClasses = new string[] { "page-link" }
-            })
+        new PagedListRenderOptions
+        {
+        LiElementClasses = new string[] { "page-item" },
+        PageClasses = new string[] { "page-link bg-purple text-light" }
+        })
     </div>
 </div>

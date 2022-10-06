@@ -33,7 +33,7 @@ namespace BlogProject.Controllers
                         .OrderByDescending(b => b.Created)
                         .ToPagedListAsync(page, pageSize);
 
-            ViewData["HeaderImage"] = @Url.Content("~/assets/img/home.jpg");
+            ViewData["HeaderImage"] = Url.Content("~/assets/img/home.jpg");
             ViewData["MainText"] = "Tech Savvy";
             ViewData["SubText"] = "A Tech Blog Collection";
 
@@ -55,11 +55,13 @@ namespace BlogProject.Controllers
                 model.Message = $"{model.Message} <hr/> Phone: {model.PhoneNumber}";
                 await _emailSender.SendContactEmailAsync(model.Email, model.Name, model.Subject, model.Message);
                 TempData["SweetAlert"] = "Message sent successfully. I'll get back to you ASAP!";
+                TempData["SwalIcon"] = "success";
                 return RedirectToAction("Index", "Home", new { page });
             }
             catch (SmtpCommandException)
             {
                 TempData["SweetAlert"] = "Daily user sending quota exceeded. Please try again later or send an email to adammshively89@gmail.com";
+                TempData["SwalIcon"] = "error";
                 return View();
             }
         }

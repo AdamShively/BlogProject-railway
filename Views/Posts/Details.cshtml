@@ -27,7 +27,7 @@
                         <div class="single-post-meta-details ms-2">
                             <div class="single-post-meta-details-name">@post.BlogAuthor.FullName</div>
                             @{
-                                var date = (@post.Updated == null) ? @post.Created : @post.Updated;
+                                var date = @post.Updated ?? @post.Created;
                             }
                             <div class="single-post-meta-details-date">@date</div>
                         </div>

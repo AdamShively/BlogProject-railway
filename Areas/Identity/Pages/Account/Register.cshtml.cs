@@ -27,10 +27,9 @@ namespace BlogProject.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<BlogUser> _signInManager;
         private readonly UserManager<BlogUser> _userManager;
-        private readonly IUserStore<BlogUser> _userStore;  //delete this??
-        private readonly IUserEmailStore<BlogUser> _emailStore;  //delete this??
+        private readonly IUserStore<BlogUser> _userStore;
+        private readonly IUserEmailStore<BlogUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
-        //private readonly IEmailSender _emailSender;
         private readonly IBlogEmailSender _emailSender;
         private readonly IImageService _imageService;
         private readonly IConfiguration _configuration;
@@ -139,20 +138,17 @@ namespace BlogProject.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                //Look at the way blogs controller is setup.
-                //var user = CreateUser();    YOU NEED TO COME BACK TO THIS AND DECIDE CREATEUSER OR BLOGUSER
-                var user = new BlogUser
-                {
-                    FirstName = Input.FirstName,
-                    LastName = Input.LastName,
-                    DisplayName = Input.DisplayName,
-                    //UserName = 
-                    Email = Input.Email,
-                    ImageData = (await _imageService.EncodeImageAsync(Input.ImageFile)) ??
-                                 await _imageService.EncodeImageAsync(_configuration["DefaultUserImage"]),
-                    ContentType = Input.ImageFile is null ? Path.GetExtension(_configuration["DefaultUserImage"]) :
-                                  _imageService.ContentType(Input.ImageFile)
-                };
+                var user = CreateUser();
+
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
+                user.DisplayName = Input.DisplayName;
+                user.Email = Input.Email;
+                user.ImageData = (await _imageService.EncodeImageAsync(Input.ImageFile)) ??
+                                await _imageService.EncodeImageAsync(Url.Content("defaultUserImage.png"));
+                user.ContentType = Input.ImageFile is null ? Path.GetExtension("defaultUserImage.png") :
+                                _imageService.ContentType(Input.ImageFile);
+                
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
